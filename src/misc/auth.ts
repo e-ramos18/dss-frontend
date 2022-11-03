@@ -1,5 +1,6 @@
-import { setItem } from "../utils";
+import { getItem, setItem } from "../utils";
 import api from "./api";
+import { APIResponse } from "../types";
 
 export const register = async (
   name: string,
@@ -34,5 +35,27 @@ export const login = async (
   } catch (error) {
     // @ts-ignore
     return error.response.data.error.message;
+  }
+};
+
+export const getCurrentUser = async (): Promise<APIResponse> => {
+  try {
+    const token = getItem("token");
+    const res = await api.get("/users/me", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    });
+    return {
+      data: res.data,
+      error: "",
+    };
+  } catch (error) {
+    return {
+      data: null,
+      // @ts-ignore
+      error: error.response.data.error.message,
+    };
   }
 };

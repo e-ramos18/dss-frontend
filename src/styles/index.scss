@@ -1,0 +1,18 @@
+body {
+  margin: 0;
+  font-family: "Roboto", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  box-sizing: border-box;
+}
+
+.center {
+  margin: auto;
+  width: 50%;
+  padding: 1rem;
+  text-align: center;
+}
+
+.ma-sm {
+  margin: 1rem;
+}

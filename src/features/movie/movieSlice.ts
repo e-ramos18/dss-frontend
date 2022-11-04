@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { fetchMovies } from "../../misc/movie";
+import { addMovie, fetchMovies } from "../../misc/movie";
 import { IMovie } from "../../types";
 
 type InitialState = {
@@ -32,6 +32,22 @@ const movieSlice = createSlice({
     builder.addCase(fetchMovies.rejected, (state, action) => {
       state.loading = false;
       state.movies = [];
+      state.error = action.error.message || "Something went wrong";
+    });
+
+    builder.addCase(addMovie.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(
+      addMovie.fulfilled,
+      (state, action: PayloadAction<IMovie[]>) => {
+        state.loading = false;
+        state.movies = state.movies.concat(action.payload);
+        state.error = "";
+      }
+    );
+    builder.addCase(addMovie.rejected, (state, action) => {
+      state.loading = false;
       state.error = action.error.message || "Something went wrong";
     });
   },

@@ -14,14 +14,14 @@ export interface IUser {
 }
 
 export interface IMovie {
-  id: string;
+  id?: string;
   title: string;
   description: string;
   cost: string;
   imageUrl: string;
   year: string;
-  actors: string[];
-  reviews: string[];
+  actors?: string[];
+  reviews?: string[];
   createdAt?: string;
 }
 

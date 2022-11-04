@@ -1,4 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import { IMovie } from "../types";
 import { getItem } from "../utils";
 import api from "./api";
 
@@ -13,3 +14,17 @@ export const fetchMovies = createAsyncThunk("movie/fetchMovies", async () => {
   });
   return res.data;
 });
+
+export const addMovie = createAsyncThunk(
+  "movie/addMovie",
+  async (body: IMovie) => {
+    const token = getItem("token");
+    const res = await api.post("/movies", body, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    });
+    return res.data;
+  }
+);

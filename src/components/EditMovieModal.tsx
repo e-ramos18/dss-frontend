@@ -11,7 +11,7 @@ import { Box, TextField } from "@mui/material";
 import { useContext, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { ErrorContext, ErrorContextType } from "../context/ErrorProvider";
-import { addMovie } from "../misc/movie";
+import { editMovie } from "../misc/movie";
 import { IMovie } from "../types";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -56,6 +56,7 @@ const BootstrapDialogTitle = (props: DialogTitleProps) => {
 type Iprops = {
   open: boolean;
   handleClose: () => void;
+  movie: IMovie;
 };
 
 const errors = {
@@ -66,19 +67,19 @@ const errors = {
   year: "Please add a year.",
 };
 
-const AddMovieModal = ({ open, handleClose }: Iprops) => {
+const EditMovieModal = ({ open, handleClose, movie }: Iprops) => {
   const loading = useAppSelector((state) => state.movie.loading);
   const dispatch = useAppDispatch();
   const { setErrorMessage } = useContext(ErrorContext) as ErrorContextType;
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState(movie.title);
   const [titleInvalid, setTitleInvalid] = useState("");
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState(movie.description);
   const [descriptionInvalid, setDescriptionInvalid] = useState("");
-  const [cost, setCost] = useState("");
+  const [cost, setCost] = useState(movie.cost);
   const [costInvalid, setCostInvalid] = useState("");
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState(movie.imageUrl);
   const [imageInvalid, setImageInvalid] = useState("");
-  const [year, setYear] = useState("");
+  const [year, setYear] = useState(movie.year);
   const [yearInvalid, setYearInvalid] = useState("");
 
   const validateForm = (): string => {
@@ -116,29 +117,21 @@ const AddMovieModal = ({ open, handleClose }: Iprops) => {
     return "";
   };
 
-  const resetForm = () => {
-    setTitle("");
-    setDescription("");
-    setCost("");
-    setImage("");
-    setYear("");
-  };
-
   const handleSubmit = async () => {
     if (validateForm()) return;
-    const movie: IMovie = {
+    const updatedMovie: IMovie = {
+      id: movie.id,
       title,
       description,
       cost,
       imageUrl: image,
       year,
     };
-    const res = await dispatch(addMovie(movie));
-    if (res.type === "movie/addMovie/rejected") {
+    const res = await dispatch(editMovie(updatedMovie));
+    if (res.type === "movie/editMovie/rejected") {
       //@ts-ignore
       return setErrorMessage(res.error.message);
     }
-    resetForm();
     handleClose();
   };
 
@@ -153,7 +146,7 @@ const AddMovieModal = ({ open, handleClose }: Iprops) => {
           id="customized-dialog-title"
           onClose={handleClose}
         >
-          Add Movie
+          Edit Movie
         </BootstrapDialogTitle>
         <DialogContent dividers>
           <Box
@@ -219,7 +212,7 @@ const AddMovieModal = ({ open, handleClose }: Iprops) => {
             loading={loading}
             onClick={handleSubmit}
           >
-            Submit
+            Save changes
           </LoadingButton>
         </DialogActions>
       </BootstrapDialog>
@@ -227,4 +220,4 @@ const AddMovieModal = ({ open, handleClose }: Iprops) => {
   );
 };
 
-export default AddMovieModal;
+export default EditMovieModal;

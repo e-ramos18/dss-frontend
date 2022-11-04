@@ -28,3 +28,31 @@ export const addMovie = createAsyncThunk(
     return res.data;
   }
 );
+
+export const editMovie = createAsyncThunk(
+  "movie/editMovie",
+  async (body: IMovie) => {
+    const token = getItem("token");
+    const res = await api.put(`/movies/${body.id}`, body, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    });
+    return res.data;
+  }
+);
+
+export const deleteMovie = createAsyncThunk(
+  "movie/deleteMovie",
+  async (id: string) => {
+    const token = getItem("token");
+    const res = await api.delete(`/movies/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    });
+    return res.data;
+  }
+);

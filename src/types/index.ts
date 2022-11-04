@@ -25,6 +25,15 @@ export interface IMovie {
   createdAt?: string;
 }
 
+export interface IActor {
+  id?: string;
+  fname: string;
+  lname: string;
+  gender: string;
+  imageUrl: string;
+  createdAt?: string;
+}
+
 export interface APIResponse {
   data: null | IUser;
   error: string;

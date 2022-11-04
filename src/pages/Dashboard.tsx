@@ -19,6 +19,7 @@ import ListItemText from "@mui/material/ListItemText";
 import LocalMoviesIcon from "@mui/icons-material/LocalMovies";
 import RecentActorsIcon from "@mui/icons-material/RecentActors";
 import Movies from "./Movies";
+import Actors from "./Actors";
 
 const drawerWidth = 240;
 
@@ -78,7 +79,7 @@ const Dashboard = () => {
 
   const renderMain = () => {
     if (main === "actors") {
-      return <div>Actors</div>;
+      return <Actors />;
     } else if (main === "movies") {
       return <Movies />;
     }

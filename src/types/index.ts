@@ -10,6 +10,7 @@ export interface IUser {
   email: string;
   password?: string;
   role: Roles;
+  isApproved?: boolean;
   createdAt?: string;
 }
 

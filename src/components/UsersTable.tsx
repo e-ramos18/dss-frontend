@@ -4,18 +4,21 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import HowToRegIcon from "@mui/icons-material/HowToReg";
 import Paper from "@mui/material/Paper";
 import { useContext, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { IUser, Roles } from "../types";
 import { ErrorContext, ErrorContextType } from "../context/ErrorProvider";
-import { Button } from "@mui/material";
+import { Button, Chip, Tooltip } from "@mui/material";
 import DeleteModal from "./DeleteModal";
-import { deleteUser, fetchUsers } from "../misc/user";
+import { deleteUser, editUser, fetchUsers } from "../misc/user";
 import AddUserModal from "./AddUserModal";
 import EditUserModal from "./EditUserModal";
+import { LoadingButton } from "@mui/lab";
 
 const UsersTable = () => {
+  const loading = useAppSelector((state) => state.user.loading);
   const { setErrorMessage } = useContext(ErrorContext) as ErrorContextType;
   const dispatch = useAppDispatch();
   const users = useAppSelector((state) => state.user.users);
@@ -31,6 +34,16 @@ const UsersTable = () => {
   const onMount = async () => {
     const res = await dispatch(fetchUsers());
     if (res.type === "user/fetchUsers/rejected") {
+      //@ts-ignore
+      setErrorMessage(res.error.message);
+    }
+  };
+
+  const approveUser = async (user: IUser, isApprove: boolean) => {
+    const updatedUser = { ...user };
+    updatedUser.isApproved = isApprove;
+    const res = await dispatch(editUser(updatedUser));
+    if (res.type === "user/editUser/rejected") {
       //@ts-ignore
       setErrorMessage(res.error.message);
     }
@@ -78,6 +91,7 @@ const UsersTable = () => {
             <TableCell align="center">Email</TableCell>
             <TableCell align="center"> Name</TableCell>
             <TableCell align="center">Role</TableCell>
+            <TableCell align="center">Status</TableCell>
             <TableCell align="center">Action</TableCell>
           </TableRow>
         </TableHead>
@@ -92,7 +106,32 @@ const UsersTable = () => {
                 <TableCell align="center">{user.name}</TableCell>
                 <TableCell align="center">{user.role}</TableCell>
                 <TableCell align="center">
-                  <Button onClick={() => handleOpenEdit(user)}>Edit</Button>
+                  {user.isApproved ? (
+                    <Tooltip title="Click to disapprove User">
+                      <Chip
+                        icon={<HowToRegIcon />}
+                        label="approved"
+                        color="success"
+                        onClick={() => approveUser(user, false)}
+                      />
+                    </Tooltip>
+                  ) : (
+                    <Tooltip title="Click to approve User">
+                      <Chip
+                        icon={<HowToRegIcon />}
+                        label="to approved"
+                        onClick={() => approveUser(user, true)}
+                      />
+                    </Tooltip>
+                  )}
+                </TableCell>
+                <TableCell align="center">
+                  <Button
+                    onClick={() => handleOpenEdit(user)}
+                    disabled={user.role === Roles.RootAdmin}
+                  >
+                    Edit
+                  </Button>
                   <Button
                     color="error"
                     onClick={() => handleOpenDelete(user.id)}

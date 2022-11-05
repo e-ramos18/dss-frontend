@@ -5,7 +5,6 @@ import { validatEmail } from "../utils";
 import { register } from "../misc/auth";
 import { useNavigate } from "react-router-dom";
 import { ErrorContext, ErrorContextType } from "../context/ErrorProvider";
-import { Link } from "@mui/material";
 
 const RegisterForm = () => {
   const { setErrorMessage } = useContext(ErrorContext) as ErrorContextType;

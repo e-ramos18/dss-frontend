@@ -12,6 +12,7 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -20,6 +21,7 @@ import LocalMoviesIcon from "@mui/icons-material/LocalMovies";
 import RecentActorsIcon from "@mui/icons-material/RecentActors";
 import Movies from "./Movies";
 import Actors from "./Actors";
+import Users from "./Users";
 
 const drawerWidth = 240;
 
@@ -82,6 +84,8 @@ const Dashboard = () => {
       return <Actors />;
     } else if (main === "movies") {
       return <Movies />;
+    } else if (main === "users") {
+      return <Users />;
     }
   };
 
@@ -150,6 +154,14 @@ const Dashboard = () => {
                 <LocalMoviesIcon />
               </ListItemIcon>
               <ListItemText primary="Movies" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => setMain("users")}>
+              <ListItemIcon>
+                <AccountCircleIcon />
+              </ListItemIcon>
+              <ListItemText primary="Users" />
             </ListItemButton>
           </ListItem>
         </List>

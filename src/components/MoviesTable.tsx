@@ -50,6 +50,11 @@ const MoviesTable = () => {
     setOpenEdit(true);
   };
 
+  const handleCloseEdit = () => {
+    setMovieToEdit(null);
+    setOpenEdit(false);
+  };
+
   const handleDelete = async (id: string) => {
     const res = await dispatch(deleteMovie(id));
     if (res.type === "movie/deleteMovie/rejected") {
@@ -103,7 +108,7 @@ const MoviesTable = () => {
       {movieToEdit !== null && (
         <EditMovieModal
           open={openEdit}
-          handleClose={() => setOpenEdit(false)}
+          handleClose={handleCloseEdit}
           movie={movieToEdit}
         />
       )}

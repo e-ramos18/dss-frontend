@@ -7,30 +7,30 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { useContext, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { deleteActor, fetchActors } from "../misc/actor";
-import { IActor } from "../types";
+import { IUser, Roles } from "../types";
 import { ErrorContext, ErrorContextType } from "../context/ErrorProvider";
 import { Button } from "@mui/material";
-import AddActorModal from "./AddActorModal";
 import DeleteModal from "./DeleteModal";
-import EditActorModal from "./EditActorModal";
+import { deleteUser, fetchUsers } from "../misc/user";
+import AddUserModal from "./AddUserModal";
+import EditUserModal from "./EditUserModal";
 
-const ActorsTable = () => {
+const UsersTable = () => {
   const { setErrorMessage } = useContext(ErrorContext) as ErrorContextType;
   const dispatch = useAppDispatch();
-  const actors = useAppSelector((state) => state.actor.actors);
+  const users = useAppSelector((state) => state.user.users);
   const [openAdd, setOpenAdd] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [idToDelete, setIdToDelete] = useState("");
-  const [actorToEdit, setActorToEdit] = useState<IActor | null>(null);
+  const [userToEdit, setUserToEdit] = useState<IUser | null>(null);
 
   useEffect(() => {
     onMount();
   }, []);
   const onMount = async () => {
-    const res = await dispatch(fetchActors());
-    if (res.type === "actor/fetchActors/rejected") {
+    const res = await dispatch(fetchUsers());
+    if (res.type === "user/fetchUsers/rejected") {
       //@ts-ignore
       setErrorMessage(res.error.message);
     }
@@ -43,21 +43,21 @@ const ActorsTable = () => {
     setOpenDelete(true);
   };
 
-  const handleOpenEdit = (actor: IActor | null) => {
-    if (actor) {
-      setActorToEdit(actor);
+  const handleOpenEdit = (user: IUser | null) => {
+    if (user) {
+      setUserToEdit(user);
     }
     setOpenEdit(true);
   };
 
   const handleCloseEdit = () => {
-    setActorToEdit(null);
+    setUserToEdit(null);
     setOpenEdit(false);
   };
 
   const handleDelete = async (id: string) => {
-    const res = await dispatch(deleteActor(id));
-    if (res.type === "actor/deleteActor/rejected") {
+    const res = await dispatch(deleteUser(id));
+    if (res.type === "user/deleteUser/rejected") {
       //@ts-ignore
       return setErrorMessage(res.error.message);
     }
@@ -68,34 +68,35 @@ const ActorsTable = () => {
     <TableContainer component={Paper}>
       <div className="ma-sm">
         <Button variant="contained" onClick={() => setOpenAdd(true)}>
-          Add Actor
+          Add User
         </Button>
       </div>
 
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell align="center">First Name</TableCell>
-            <TableCell align="center">Last Name</TableCell>
-            <TableCell align="center">Gender</TableCell>
+            <TableCell align="center">Email</TableCell>
+            <TableCell align="center"> Name</TableCell>
+            <TableCell align="center">Role</TableCell>
             <TableCell align="center">Action</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {actors.length > 0 &&
-            actors.map((actor: IActor) => (
+          {users.length > 0 &&
+            users.map((user: IUser) => (
               <TableRow
-                key={actor.id}
+                key={user.id}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
-                <TableCell align="center">{actor.fname}</TableCell>
-                <TableCell align="center">{actor.lname}</TableCell>
-                <TableCell align="center">{actor.gender}</TableCell>
+                <TableCell align="center">{user.email}</TableCell>
+                <TableCell align="center">{user.name}</TableCell>
+                <TableCell align="center">{user.role}</TableCell>
                 <TableCell align="center">
-                  <Button onClick={() => handleOpenEdit(actor)}>Edit</Button>
+                  <Button onClick={() => handleOpenEdit(user)}>Edit</Button>
                   <Button
                     color="error"
-                    onClick={() => handleOpenDelete(actor.id)}
+                    onClick={() => handleOpenDelete(user.id)}
+                    disabled={user.role === Roles.RootAdmin}
                   >
                     Delete
                   </Button>
@@ -104,12 +105,12 @@ const ActorsTable = () => {
             ))}
         </TableBody>
       </Table>
-      <AddActorModal open={openAdd} handleClose={() => setOpenAdd(false)} />
-      {actorToEdit !== null && (
-        <EditActorModal
+      <AddUserModal open={openAdd} handleClose={() => setOpenAdd(false)} />
+      {userToEdit !== null && (
+        <EditUserModal
           open={openEdit}
           handleClose={handleCloseEdit}
-          actor={actorToEdit}
+          user={userToEdit}
         />
       )}
       <DeleteModal
@@ -122,4 +123,4 @@ const ActorsTable = () => {
   );
 };
 
-export default ActorsTable;
+export default UsersTable;

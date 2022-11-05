@@ -5,10 +5,10 @@ export const enum Roles {
 }
 
 export interface IUser {
-  id: string;
+  id?: string;
   name: string;
   email: string;
-  password: string;
+  password?: string;
   role: Roles;
   createdAt?: string;
 }

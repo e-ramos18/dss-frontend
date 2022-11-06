@@ -26,6 +26,18 @@ export interface IMovie {
   createdAt?: string;
 }
 
+export interface IReview {
+  id?: string;
+  movieId: string;
+  movie?: { title: string };
+  userId: string;
+  user?: { name: string };
+  description: string;
+  rating: number;
+  isApproved: boolean;
+  createdAt: string;
+}
+
 export interface IActor {
   id?: string;
   fname: string;

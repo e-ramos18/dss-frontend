@@ -19,9 +19,11 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import LocalMoviesIcon from "@mui/icons-material/LocalMovies";
 import RecentActorsIcon from "@mui/icons-material/RecentActors";
+import StarRateIcon from "@mui/icons-material/StarRate";
 import Movies from "./Movies";
 import Actors from "./Actors";
 import Users from "./Users";
+import Reviews from "./Reviews";
 
 const drawerWidth = 240;
 
@@ -86,6 +88,8 @@ const Dashboard = () => {
       return <Movies />;
     } else if (main === "users") {
       return <Users />;
+    } else if (main === "reviews") {
+      return <Reviews />;
     }
   };
 
@@ -162,6 +166,14 @@ const Dashboard = () => {
                 <AccountCircleIcon />
               </ListItemIcon>
               <ListItemText primary="Users" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => setMain("reviews")}>
+              <ListItemIcon>
+                <StarRateIcon />
+              </ListItemIcon>
+              <ListItemText primary="Reviews" />
             </ListItemButton>
           </ListItem>
         </List>

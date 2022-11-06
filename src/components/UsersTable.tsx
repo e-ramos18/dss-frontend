@@ -15,10 +15,8 @@ import DeleteModal from "./DeleteModal";
 import { deleteUser, editUser, fetchUsers } from "../misc/user";
 import AddUserModal from "./AddUserModal";
 import EditUserModal from "./EditUserModal";
-import { LoadingButton } from "@mui/lab";
 
 const UsersTable = () => {
-  const loading = useAppSelector((state) => state.user.loading);
   const { setErrorMessage } = useContext(ErrorContext) as ErrorContextType;
   const dispatch = useAppDispatch();
   const users = useAppSelector((state) => state.user.users);

@@ -8,11 +8,13 @@ import DialogActions from "@mui/material/DialogActions";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { Box, TextField } from "@mui/material";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { ErrorContext, ErrorContextType } from "../context/ErrorProvider";
 import { editMovie } from "../misc/movie";
-import { IMovie } from "../types";
+import { IActor, IMovie } from "../types";
+import { fetchActors } from "../misc/actor";
+import SelectActor from "./SelectActor";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -65,10 +67,12 @@ const errors = {
   cost: "Please add a cost.",
   imageUrl: "Please add a image url.",
   year: "Please add a year.",
+  actors: "Please add atleast one actor.",
 };
 
 const EditMovieModal = ({ open, handleClose, movie }: Iprops) => {
   const loading = useAppSelector((state) => state.movie.loading);
+  const actors = useAppSelector((state) => state.actor.actors);
   const dispatch = useAppDispatch();
   const { setErrorMessage } = useContext(ErrorContext) as ErrorContextType;
   const [title, setTitle] = useState(movie.title);
@@ -81,6 +85,27 @@ const EditMovieModal = ({ open, handleClose, movie }: Iprops) => {
   const [imageInvalid, setImageInvalid] = useState("");
   const [year, setYear] = useState(movie.year);
   const [yearInvalid, setYearInvalid] = useState("");
+  const [movieActors, setMovieActors] = useState<string[]>([]);
+  const [movieActorsInvalid, setMovieActorsInvalid] = useState("");
+
+  useEffect(() => {
+    onMount();
+  }, []);
+  const onMount = async () => {
+    const res = await dispatch(fetchActors());
+    if (res.type === "actor/fetchActors/rejected") {
+      //@ts-ignore
+      setErrorMessage(res.error.message);
+    }
+  };
+
+  const filteredActors = (movie: IMovie): IActor[] => {
+    const filtered = actors.filter((actor: IActor) => {
+      if (!actor.id) return false;
+      return movie.actorsIds?.includes(actor.id);
+    });
+    return filtered;
+  };
 
   const validateForm = (): string => {
     if (!title) {
@@ -113,8 +138,21 @@ const EditMovieModal = ({ open, handleClose, movie }: Iprops) => {
     } else {
       setYearInvalid("");
     }
+    if (!movieActors || !movieActors.length) {
+      setMovieActorsInvalid(errors.actors);
+      return errors.actors;
+    } else {
+      setMovieActorsInvalid("");
+    }
 
     return "";
+  };
+
+  const handleActorChange = (_event: object, values: IActor[]) => {
+    const actorsIds = values.map((value) => value.id);
+    if (!actorsIds) return;
+    //@ts-ignore
+    setMovieActors(actorsIds);
   };
 
   const handleSubmit = async () => {
@@ -126,6 +164,7 @@ const EditMovieModal = ({ open, handleClose, movie }: Iprops) => {
       cost,
       imageUrl: image,
       year,
+      actorsIds: movieActors,
     };
     const res = await dispatch(editMovie(updatedMovie));
     if (res.type === "movie/editMovie/rejected") {
@@ -204,6 +243,16 @@ const EditMovieModal = ({ open, handleClose, movie }: Iprops) => {
                 onChange={(e) => setYear(e.target.value)}
               />
             </div>
+            {actors && (
+              <div className="ma-sm">
+                <SelectActor
+                  options={actors}
+                  handleChange={handleActorChange}
+                  helperText={movieActorsInvalid}
+                  defaultValue={filteredActors(movie)}
+                />
+              </div>
+            )}
           </Box>
         </DialogContent>
         <DialogActions>

@@ -3,17 +3,20 @@ import {
   addMovie,
   deleteMovie,
   editMovie,
+  fetchMovie,
   fetchMovies,
 } from "../../misc/movie";
 import { IMovie } from "../../types";
 
 type InitialState = {
   movies: IMovie[];
+  movie: IMovie | null;
   loading: boolean;
   error: string;
 };
 const initialState: InitialState = {
   movies: [],
+  movie: null,
   loading: false,
   error: "",
 };
@@ -38,6 +41,24 @@ const movieSlice = createSlice({
     builder.addCase(fetchMovies.rejected, (state, action) => {
       state.loading = false;
       state.movies = [];
+      state.error = action.error.message || "Something went wrong";
+    });
+
+    // Fetch a movie
+    builder.addCase(fetchMovie.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(
+      fetchMovie.fulfilled,
+      (state, action: PayloadAction<IMovie>) => {
+        state.loading = false;
+        state.movie = action.payload;
+        state.error = "";
+      }
+    );
+    builder.addCase(fetchMovie.rejected, (state, action) => {
+      state.loading = false;
+      state.movie = null;
       state.error = action.error.message || "Something went wrong";
     });
 

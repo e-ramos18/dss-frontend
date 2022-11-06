@@ -22,6 +22,7 @@ export interface IMovie {
   imageUrl: string;
   year: string;
   actors?: string[];
+  actorsIds?: string[];
   reviews?: string[];
   createdAt?: string;
 }

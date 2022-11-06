@@ -15,7 +15,6 @@ import store from "./redux/store";
 import Reviews from "./pages/Reviews";
 import Actors from "./pages/Actors";
 import Users from "./pages/Users";
-
 const App = () => {
   return (
     <Provider store={store}>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
@@ -20,10 +20,10 @@ import ListItemText from "@mui/material/ListItemText";
 import LocalMoviesIcon from "@mui/icons-material/LocalMovies";
 import RecentActorsIcon from "@mui/icons-material/RecentActors";
 import StarRateIcon from "@mui/icons-material/StarRate";
-import Movies from "./Movies";
-import Actors from "./Actors";
-import Users from "./Users";
-import Reviews from "./Reviews";
+import { useNavigate, Outlet } from "react-router-dom";
+import { ErrorContext, ErrorContextType } from "../context/ErrorProvider";
+import { APIResponse, Roles } from "../types";
+import { getCurrentUser } from "../misc/auth";
 
 const drawerWidth = 240;
 
@@ -77,19 +77,19 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  const { setErrorMessage } = useContext(ErrorContext) as ErrorContextType;
   const theme = useTheme();
   const [open, setOpen] = useState(true);
-  const [main, setMain] = useState("actors");
-
-  const renderMain = () => {
-    if (main === "actors") {
-      return <Actors />;
-    } else if (main === "movies") {
-      return <Movies />;
-    } else if (main === "users") {
-      return <Users />;
-    } else if (main === "reviews") {
-      return <Reviews />;
+  useEffect(() => {
+    onMount();
+  }, []);
+  const onMount = async () => {
+    const res: APIResponse = await getCurrentUser();
+    if (!res.data && res.error) {
+      setErrorMessage(res.error);
+    } else if (res.data && res.data.role === Roles.User) {
+      navigate("/home");
     }
   };
 
@@ -145,23 +145,7 @@ const Dashboard = () => {
         <Divider />
         <List>
           <ListItem disablePadding>
-            <ListItemButton onClick={() => setMain("actors")}>
-              <ListItemIcon>
-                <RecentActorsIcon />
-              </ListItemIcon>
-              <ListItemText primary="Actors" />
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding>
-            <ListItemButton onClick={() => setMain("movies")}>
-              <ListItemIcon>
-                <LocalMoviesIcon />
-              </ListItemIcon>
-              <ListItemText primary="Movies" />
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding>
-            <ListItemButton onClick={() => setMain("users")}>
+            <ListItemButton onClick={() => navigate("/")}>
               <ListItemIcon>
                 <AccountCircleIcon />
               </ListItemIcon>
@@ -169,7 +153,23 @@ const Dashboard = () => {
             </ListItemButton>
           </ListItem>
           <ListItem disablePadding>
-            <ListItemButton onClick={() => setMain("reviews")}>
+            <ListItemButton onClick={() => navigate("/adminMovies")}>
+              <ListItemIcon>
+                <LocalMoviesIcon />
+              </ListItemIcon>
+              <ListItemText primary="Movies" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => navigate("/adminActors")}>
+              <ListItemIcon>
+                <RecentActorsIcon />
+              </ListItemIcon>
+              <ListItemText primary="Actors" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => navigate("/adminReviews")}>
               <ListItemIcon>
                 <StarRateIcon />
               </ListItemIcon>
@@ -180,7 +180,7 @@ const Dashboard = () => {
       </Drawer>
       <Main open={open}>
         <DrawerHeader />
-        {renderMain()}
+        <Outlet />
       </Main>
     </Box>
   );

@@ -10,9 +10,11 @@ import {
 } from "./pages";
 import ErrorProvider from "./context/ErrorProvider";
 import UserPage from "./pages/UserPage";
-import AdminPage from "./pages/AdminPage";
 import { Provider } from "react-redux";
 import store from "./redux/store";
+import Reviews from "./pages/Reviews";
+import Actors from "./pages/Actors";
+import Users from "./pages/Users";
 
 const App = () => {
   return (
@@ -26,11 +28,14 @@ const App = () => {
             </Route>
             <Route element={<ProtectedPage />}>
               <Route element={<UserPage />}>
-                <Route path="/" element={<Home />} />
+                <Route path="/home" element={<Home />} />
                 <Route path="/movies" element={<Movies />} />
               </Route>
-              <Route element={<AdminPage />}>
-                <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/" element={<Dashboard />}>
+                <Route path="/" element={<Users />} />
+                <Route path="/adminMovies" element={<Movies />} />
+                <Route path="/adminActors" element={<Actors />} />
+                <Route path="/adminReviews" element={<Reviews />} />
               </Route>
             </Route>
             <Route path="*" element={<div>Page Not Found.</div>} />

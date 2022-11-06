@@ -20,10 +20,12 @@ import ListItemText from "@mui/material/ListItemText";
 import LocalMoviesIcon from "@mui/icons-material/LocalMovies";
 import RecentActorsIcon from "@mui/icons-material/RecentActors";
 import StarRateIcon from "@mui/icons-material/StarRate";
+import LogoutIcon from "@mui/icons-material/Logout";
 import { useNavigate, Outlet } from "react-router-dom";
 import { ErrorContext, ErrorContextType } from "../context/ErrorProvider";
 import { APIResponse, Roles } from "../types";
 import { getCurrentUser } from "../misc/auth";
+import { setItem } from "../utils";
 
 const drawerWidth = 240;
 
@@ -91,6 +93,11 @@ const Dashboard = () => {
     } else if (res.data && res.data.role === Roles.User) {
       navigate("/home");
     }
+  };
+
+  const handleLogout = () => {
+    setItem("token", null);
+    navigate("/login");
   };
 
   const handleDrawerOpen = () => {
@@ -174,6 +181,14 @@ const Dashboard = () => {
                 <StarRateIcon />
               </ListItemIcon>
               <ListItemText primary="Reviews" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton onClick={handleLogout}>
+              <ListItemIcon>
+                <LogoutIcon />
+              </ListItemIcon>
+              <ListItemText primary="Logout" />
             </ListItemButton>
           </ListItem>
         </List>

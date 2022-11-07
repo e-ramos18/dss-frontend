@@ -18,6 +18,7 @@ import Users from "./pages/Users";
 import MovieDetails from "./pages/MovieDetails";
 import MoviesList from "./pages/MoviesList";
 import { createTheme, ThemeProvider } from "@mui/material";
+import ActorDetails from "./pages/ActorDetails";
 
 const darkTheme = createTheme({
   palette: {
@@ -35,6 +36,7 @@ const App = () => {
               <Route path="/" element={<Home />}>
                 <Route path="/" element={<MoviesList />} />
                 <Route path="/movie/:id" element={<MovieDetails />} />
+                <Route path="/actor/:id" element={<ActorDetails />} />
               </Route>
               <Route element={<UnprotectedPage />}>
                 <Route path="/register" element={<Register />} />

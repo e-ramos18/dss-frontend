@@ -23,7 +23,7 @@ const MovieReview = ({ review }: Iprops) => {
           <AccountCircleIcon />
         </Avatar>
         <Typography
-          sx={{ width: "23%", flexShrink: 0, color: "text.secondary" }}
+          sx={{ width: "35%", flexShrink: 0, color: "text.secondary" }}
         >
           User: {`[${review.userId}]`}
         </Typography>

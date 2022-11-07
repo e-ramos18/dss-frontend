@@ -59,11 +59,18 @@ const MovieDetails = () => {
                   {actors && (
                     <>
                       <p>
+                        |
                         {actors.map((actor) => {
                           if (actor.id && movie.actorsIds?.includes(actor.id)) {
                             return (
                               <span key={actor.id}>
-                                {actor.fname} {actor.lname}, {""}
+                                <Button
+                                  variant="text"
+                                  onClick={() => navigate(`/actor/${actor.id}`)}
+                                >
+                                  {actor.fname} {actor.lname}
+                                </Button>
+                                | {""}
                               </span>
                             );
                           }
@@ -73,7 +80,7 @@ const MovieDetails = () => {
                   )}
                 </>
               )}
-              {!movie.reviews && <h3>No reviews yet.</h3>}
+              {!movie.reviews && <p>No reviews yet.</p>}
 
               <Button variant="contained" onClick={handleAddReview}>
                 Add Review

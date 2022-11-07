@@ -9,6 +9,14 @@ export const fetchActors = createAsyncThunk("actor/fetchActors", async () => {
   return res.data;
 });
 
+export const fetchActor = createAsyncThunk(
+  "actor/fetchActor",
+  async (id: string) => {
+    const res = await api.get(`/actors/${id}`);
+    return res.data;
+  }
+);
+
 export const addActor = createAsyncThunk(
   "actor/addActor",
   async (body: IActor) => {

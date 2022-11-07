@@ -3,17 +3,20 @@ import {
   addActor,
   deleteActor,
   editActor,
+  fetchActor,
   fetchActors,
 } from "../../misc/actor";
 import { IActor } from "../../types";
 
 type InitialState = {
   actors: IActor[];
+  actor: IActor | null;
   loading: boolean;
   error: string;
 };
 const initialState: InitialState = {
   actors: [],
+  actor: null,
   loading: false,
   error: "",
 };
@@ -38,6 +41,24 @@ const movieSlice = createSlice({
     builder.addCase(fetchActors.rejected, (state, action) => {
       state.loading = false;
       state.actors = [];
+      state.error = action.error.message || "Something went wrong";
+    });
+
+    // Fetch actor
+    builder.addCase(fetchActor.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(
+      fetchActor.fulfilled,
+      (state, action: PayloadAction<IActor>) => {
+        state.loading = false;
+        state.actor = action.payload;
+        state.error = "";
+      }
+    );
+    builder.addCase(fetchActor.rejected, (state, action) => {
+      state.loading = false;
+      state.actor = null;
       state.error = action.error.message || "Something went wrong";
     });
 

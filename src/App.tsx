@@ -15,31 +15,44 @@ import store from "./redux/store";
 import Reviews from "./pages/Reviews";
 import Actors from "./pages/Actors";
 import Users from "./pages/Users";
+import MovieDetails from "./pages/MovieDetails";
+import MoviesList from "./pages/MoviesList";
+import { createTheme, ThemeProvider } from "@mui/material";
+
+const darkTheme = createTheme({
+  palette: {
+    mode: "dark",
+  },
+});
+
 const App = () => {
   return (
     <Provider store={store}>
       <ErrorProvider>
-        <Router>
-          <Routes>
-            <Route element={<UnprotectedPage />}>
-              <Route path="/register" element={<Register />} />
-              <Route path="/login" element={<Login />} />
-            </Route>
-            <Route element={<ProtectedPage />}>
-              <Route element={<UserPage />}>
-                <Route path="/home" element={<Home />} />
-                <Route path="/movies" element={<Movies />} />
+        <ThemeProvider theme={darkTheme}>
+          <Router>
+            <Routes>
+              <Route path="/" element={<Home />}>
+                <Route path="/" element={<MoviesList />} />
+                <Route path="/movie/:id" element={<MovieDetails />} />
               </Route>
-              <Route path="/" element={<Dashboard />}>
-                <Route path="/" element={<Users />} />
-                <Route path="/adminMovies" element={<Movies />} />
-                <Route path="/adminActors" element={<Actors />} />
-                <Route path="/adminReviews" element={<Reviews />} />
+              <Route element={<UnprotectedPage />}>
+                <Route path="/register" element={<Register />} />
+                <Route path="/login" element={<Login />} />
               </Route>
-            </Route>
-            <Route path="*" element={<div>Page Not Found.</div>} />
-          </Routes>
-        </Router>
+              <Route element={<ProtectedPage />}>
+                <Route element={<UserPage />}></Route>
+                <Route path="/dashboard" element={<Dashboard />}>
+                  <Route path="/dashboard" element={<Users />} />
+                  <Route path="/dashboard/adminMovies" element={<Movies />} />
+                  <Route path="/dashboard/adminActors" element={<Actors />} />
+                  <Route path="/dashboard/adminReviews" element={<Reviews />} />
+                </Route>
+              </Route>
+              <Route path="*" element={<div>Page Not Found.</div>} />
+            </Routes>
+          </Router>
+        </ThemeProvider>
       </ErrorProvider>
     </Provider>
   );

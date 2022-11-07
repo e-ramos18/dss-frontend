@@ -18,7 +18,7 @@ const UserPage = () => {
       res.data &&
       (res.data.role === Roles.Admin || res.data.role === Roles.RootAdmin)
     ) {
-      navigate("/");
+      navigate("/dashboard");
     }
   };
   return (

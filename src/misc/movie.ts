@@ -5,26 +5,14 @@ import api from "./api";
 
 // Generates pending, fulfilled and rejected action types
 export const fetchMovies = createAsyncThunk("movie/fetchMovies", async () => {
-  const token = getItem("token");
-  const res = await api.get("/movies", {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-    },
-  });
+  const res = await api.get("/movies");
   return res.data;
 });
 
 export const fetchMovie = createAsyncThunk(
   "movie/fetchMovie",
   async (id: string) => {
-    const token = getItem("token");
-    const res = await api.get(`/movies/${id}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-    });
+    const res = await api.get(`/movies/${id}`);
     return res.data;
   }
 );

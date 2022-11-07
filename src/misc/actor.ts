@@ -5,13 +5,7 @@ import api from "./api";
 
 // Generates pending, fulfilled and rejected action types
 export const fetchActors = createAsyncThunk("actor/fetchActors", async () => {
-  const token = getItem("token");
-  const res = await api.get("/actors", {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-    },
-  });
+  const res = await api.get("/actors");
   return res.data;
 });
 

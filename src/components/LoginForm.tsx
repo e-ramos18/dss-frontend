@@ -41,7 +41,7 @@ const LoginForm = () => {
     if (validateForm()) return;
     const err: string = await login(email, password);
     if (!err) {
-      navigate("/");
+      navigate("/dashboard");
     }
     setErrorMessage(err);
   };

@@ -23,7 +23,7 @@ import StarRateIcon from "@mui/icons-material/StarRate";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useNavigate, Outlet } from "react-router-dom";
 import { ErrorContext, ErrorContextType } from "../context/ErrorProvider";
-import { APIResponse, Roles } from "../types";
+import { APIResponse, IUser, Roles } from "../types";
 import { getCurrentUser } from "../misc/auth";
 import { setItem } from "../utils";
 
@@ -83,15 +83,17 @@ const Dashboard = () => {
   const { setErrorMessage } = useContext(ErrorContext) as ErrorContextType;
   const theme = useTheme();
   const [open, setOpen] = useState(true);
+  const [currentUser, setCurrentUser] = useState<IUser | null>(null);
   useEffect(() => {
     onMount();
   }, []);
   const onMount = async () => {
     const res: APIResponse = await getCurrentUser();
+    setCurrentUser(res.data);
     if (!res.data && res.error) {
       setErrorMessage(res.error);
     } else if (res.data && res.data.role === Roles.User) {
-      navigate("/home");
+      navigate("/");
     }
   };
 
@@ -122,8 +124,12 @@ const Dashboard = () => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
+          <Typography variant="h5" noWrap component="div">
             Admin Dashboard
+          </Typography>
+          <Box sx={{ flexGrow: 1, padding: 1 }} />
+          <Typography variant="h6" noWrap component="div">
+            {currentUser?.email}
           </Typography>
         </Toolbar>
       </AppBar>
@@ -152,7 +158,7 @@ const Dashboard = () => {
         <Divider />
         <List>
           <ListItem disablePadding>
-            <ListItemButton onClick={() => navigate("/")}>
+            <ListItemButton onClick={() => navigate("/dashboard")}>
               <ListItemIcon>
                 <AccountCircleIcon />
               </ListItemIcon>
@@ -160,7 +166,7 @@ const Dashboard = () => {
             </ListItemButton>
           </ListItem>
           <ListItem disablePadding>
-            <ListItemButton onClick={() => navigate("/adminMovies")}>
+            <ListItemButton onClick={() => navigate("/dashboard/adminMovies")}>
               <ListItemIcon>
                 <LocalMoviesIcon />
               </ListItemIcon>
@@ -168,7 +174,7 @@ const Dashboard = () => {
             </ListItemButton>
           </ListItem>
           <ListItem disablePadding>
-            <ListItemButton onClick={() => navigate("/adminActors")}>
+            <ListItemButton onClick={() => navigate("/dashboard/adminActors")}>
               <ListItemIcon>
                 <RecentActorsIcon />
               </ListItemIcon>
@@ -176,7 +182,7 @@ const Dashboard = () => {
             </ListItemButton>
           </ListItem>
           <ListItem disablePadding>
-            <ListItemButton onClick={() => navigate("/adminReviews")}>
+            <ListItemButton onClick={() => navigate("/dashboard/adminReviews")}>
               <ListItemIcon>
                 <StarRateIcon />
               </ListItemIcon>

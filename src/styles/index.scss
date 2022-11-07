@@ -16,3 +16,49 @@ body {
 .ma-sm {
   margin: 1rem;
 }
+
+.main {
+  margin: 1rem 5rem;
+}
+
+.fullHeight {
+  height: 100vh;
+  overflow-y: scroll;
+}
+
+.moviesList {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.movie {
+  &:not(:last-child) {
+    margin-right: 1rem;
+  }
+  &:hover {
+    background-color: black;
+    border-radius: 10px;
+  }
+  & > img {
+    height: 20rem;
+    width: 12rem;
+    object-fit: contain;
+  }
+}
+
+.movieDetails {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30.5rem;
+
+  & > img {
+    height: 30rem;
+    width: 25rem;
+    object-fit: contain;
+  }
+
+  & > .details {
+    width: 70%;
+  }
+}

@@ -7,13 +7,7 @@ import api from "./api";
 export const fetchReviews = createAsyncThunk(
   "review/fetchReviews",
   async () => {
-    const token = getItem("token");
-    const res = await api.get("/reviews", {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-    });
+    const res = await api.get("/reviews");
     return res.data;
   }
 );
@@ -22,7 +16,7 @@ export const addReview = createAsyncThunk(
   "review/addReview",
   async (body: IReview) => {
     const token = getItem("token");
-    const res = await api.post("/movies", body, {
+    const res = await api.post("/reviews", body, {
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token,

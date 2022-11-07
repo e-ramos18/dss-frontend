@@ -1,10 +1,11 @@
+import { Paper } from "@mui/material";
 import LoginForm from "../components/LoginForm";
 
 const Login = () => {
   return (
-    <div>
+    <Paper className="fullHeight">
       <LoginForm />
-    </div>
+    </Paper>
   );
 };
 

@@ -23,7 +23,7 @@ export interface IMovie {
   year: string;
   actors?: string[];
   actorsIds?: string[];
-  reviews?: string[];
+  reviews?: IReview[];
   createdAt?: string;
 }
 
@@ -36,7 +36,7 @@ export interface IReview {
   description: string;
   rating: number;
   isApproved: boolean;
-  createdAt: string;
+  createdAt?: string;
 }
 
 export interface IActor {

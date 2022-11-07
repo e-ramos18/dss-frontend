@@ -97,6 +97,9 @@ const EditMovieModal = ({ open, handleClose, movie }: Iprops) => {
       //@ts-ignore
       setErrorMessage(res.error.message);
     }
+    if (movie.actorsIds) {
+      setMovieActors(movie.actorsIds);
+    }
   };
 
   const filteredActors = (movie: IMovie): IActor[] => {

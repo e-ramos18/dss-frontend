@@ -10,100 +10,24 @@ import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { deleteMovie, fetchMovies } from "../misc/movie";
 import { IMovie } from "../types";
 import { ErrorContext, ErrorContextType } from "../context/ErrorProvider";
-import { Button } from "@mui/material";
+import {
+  Autocomplete,
+  Button,
+  IconButton,
+  InputAdornment,
+  TextField,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import AddMovieModal from "./AddMovieModal";
 import DeleteModal from "./DeleteModal";
 import EditMovieModal from "./EditMovieModal";
 import * as React from "react";
-import { useTheme } from "@mui/material/styles";
-import Box from "@mui/material/Box";
 import TableFooter from "@mui/material/TableFooter";
 import TablePagination from "@mui/material/TablePagination";
-import IconButton from "@mui/material/IconButton";
-import FirstPageIcon from "@mui/icons-material/FirstPage";
-import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
-import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
-import LastPageIcon from "@mui/icons-material/LastPage";
-
-interface TablePaginationActionsProps {
-  count: number;
-  page: number;
-  rowsPerPage: number;
-  onPageChange: (
-    event: React.MouseEvent<HTMLButtonElement>,
-    newPage: number
-  ) => void;
-}
-
-function TablePaginationActions(props: TablePaginationActionsProps) {
-  const theme = useTheme();
-  const { count, page, rowsPerPage, onPageChange } = props;
-
-  const handleFirstPageButtonClick = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    onPageChange(event, 0);
-  };
-
-  const handleBackButtonClick = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    onPageChange(event, page - 1);
-  };
-
-  const handleNextButtonClick = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    onPageChange(event, page + 1);
-  };
-
-  const handleLastPageButtonClick = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
-  };
-
-  return (
-    <Box sx={{ flexShrink: 0, ml: 2.5 }}>
-      <IconButton
-        onClick={handleFirstPageButtonClick}
-        disabled={page === 0}
-        aria-label="first page"
-      >
-        {theme.direction === "rtl" ? <LastPageIcon /> : <FirstPageIcon />}
-      </IconButton>
-      <IconButton
-        onClick={handleBackButtonClick}
-        disabled={page === 0}
-        aria-label="previous page"
-      >
-        {theme.direction === "rtl" ? (
-          <KeyboardArrowRight />
-        ) : (
-          <KeyboardArrowLeft />
-        )}
-      </IconButton>
-      <IconButton
-        onClick={handleNextButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label="next page"
-      >
-        {theme.direction === "rtl" ? (
-          <KeyboardArrowLeft />
-        ) : (
-          <KeyboardArrowRight />
-        )}
-      </IconButton>
-      <IconButton
-        onClick={handleLastPageButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label="last page"
-      >
-        {theme.direction === "rtl" ? <FirstPageIcon /> : <LastPageIcon />}
-      </IconButton>
-    </Box>
-  );
-}
+import TablePaginationActions from "./TablePaginationActions";
+import SearchIcon from "@mui/icons-material/Search";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
 
 const MoviesTable = () => {
   const { setErrorMessage } = useContext(ErrorContext) as ErrorContextType;
@@ -116,10 +40,30 @@ const MoviesTable = () => {
   const [movieToEdit, setMovieToEdit] = useState<IMovie | null>(null);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [filteredMovies, setFilteredMovies] = useState<IMovie[] | null>(null);
 
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - movies.length) : 0;
+  useEffect(() => {
+    onMount();
+  }, [movies.length]);
+  const onMount = async () => {
+    const res = await dispatch(fetchMovies());
+    if (res.type === "movie/fetchMovies/rejected") {
+      //@ts-ignore
+      setErrorMessage(res.error.message);
+    }
+    setFilteredMovies(movies);
+  };
+
+  const handleSearchChange = (_event: object, value: string) => {
+    const filtered = movies.filter(
+      (movie) =>
+        movie.title.includes(value) ||
+        movie.description.includes(value) ||
+        movie.cost.includes(value) ||
+        movie.year.includes(value)
+    );
+    setFilteredMovies(filtered);
+  };
 
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,
@@ -135,15 +79,8 @@ const MoviesTable = () => {
     setPage(0);
   };
 
-  useEffect(() => {
-    onMount();
-  }, []);
-  const onMount = async () => {
-    const res = await dispatch(fetchMovies());
-    if (res.type === "movie/fetchMovies/rejected") {
-      //@ts-ignore
-      setErrorMessage(res.error.message);
-    }
+  const resetTable = () => {
+    setFilteredMovies(movies);
   };
 
   const handleOpenDelete = (id?: string) => {
@@ -175,82 +112,122 @@ const MoviesTable = () => {
   };
 
   return (
-    <TableContainer component={Paper}>
+    <>
+      <Typography variant="h5">Movies Table</Typography>
       <div className="ma-sm">
-        <Button variant="contained" onClick={() => setOpenAdd(true)}>
-          Add Movie
-        </Button>
-      </div>
-
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell align="center">Title</TableCell>
-            <TableCell align="center">Cost</TableCell>
-            <TableCell align="center">Year</TableCell>
-            <TableCell align="center">Action</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {(rowsPerPage > 0
-            ? movies.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            : movies
-          ).map((movie: IMovie) => (
-            <TableRow
-              key={movie.id}
-              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-            >
-              <TableCell align="center">{movie.title}</TableCell>
-              <TableCell align="center">{movie.cost}</TableCell>
-              <TableCell align="center">{movie.year}</TableCell>
-              <TableCell align="center">
-                <Button onClick={() => handleOpenEdit(movie)}>Edit</Button>
-                <Button
-                  color="error"
-                  onClick={() => handleOpenDelete(movie.id)}
-                >
-                  Delete
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-              colSpan={3}
-              count={movies.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              SelectProps={{
-                inputProps: {
-                  "aria-label": "rows per page",
-                },
-                native: true,
+        <Autocomplete
+          freeSolo
+          disableClearable
+          options={movies.map((option) => option.title)}
+          onChange={handleSearchChange}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              placeholder="Search Movie"
+              InputProps={{
+                ...params.InputProps,
+                type: "search",
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <Tooltip title="Reset Table">
+                      <IconButton onClick={() => resetTable()}>
+                        <RestartAltIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </InputAdornment>
+                ),
               }}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-              ActionsComponent={TablePaginationActions}
+              size="small"
             />
-          </TableRow>
-        </TableFooter>
-      </Table>
-      <AddMovieModal open={openAdd} handleClose={() => setOpenAdd(false)} />
-      {movieToEdit !== null && (
-        <EditMovieModal
-          open={openEdit}
-          handleClose={handleCloseEdit}
-          movie={movieToEdit}
+          )}
         />
-      )}
-      <DeleteModal
-        open={openDelete}
-        handleClose={() => setOpenDelete(false)}
-        id={idToDelete}
-        handleDelete={handleDelete}
-      />
-    </TableContainer>
+      </div>
+      <TableContainer component={Paper}>
+        <div className="ma-sm">
+          <Button variant="contained" onClick={() => setOpenAdd(true)}>
+            Add Movie
+          </Button>
+        </div>
+        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell align="center">Title</TableCell>
+              <TableCell align="center">Cost</TableCell>
+              <TableCell align="center">Year</TableCell>
+              <TableCell align="center">Action</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredMovies &&
+              filteredMovies.length > 0 &&
+              (rowsPerPage > 0
+                ? filteredMovies.slice(
+                    page * rowsPerPage,
+                    page * rowsPerPage + rowsPerPage
+                  )
+                : filteredMovies
+              ).map((movie: IMovie) => (
+                <TableRow
+                  key={movie.id}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell align="center">{movie.title}</TableCell>
+                  <TableCell align="center">{movie.cost}</TableCell>
+                  <TableCell align="center">{movie.year}</TableCell>
+                  <TableCell align="center">
+                    <Button onClick={() => handleOpenEdit(movie)}>Edit</Button>
+                    <Button
+                      color="error"
+                      onClick={() => handleOpenDelete(movie.id)}
+                    >
+                      Delete
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TablePagination
+                rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
+                colSpan={4}
+                count={movies.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                SelectProps={{
+                  inputProps: {
+                    "aria-label": "rows per page",
+                  },
+                  native: true,
+                }}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                ActionsComponent={TablePaginationActions}
+              />
+            </TableRow>
+          </TableFooter>
+        </Table>
+        <AddMovieModal open={openAdd} handleClose={() => setOpenAdd(false)} />
+        {movieToEdit !== null && (
+          <EditMovieModal
+            open={openEdit}
+            handleClose={handleCloseEdit}
+            movie={movieToEdit}
+          />
+        )}
+        <DeleteModal
+          open={openDelete}
+          handleClose={() => setOpenDelete(false)}
+          id={idToDelete}
+          handleDelete={handleDelete}
+        />
+      </TableContainer>
+    </>
   );
 };
 

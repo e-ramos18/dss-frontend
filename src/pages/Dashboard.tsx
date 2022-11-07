@@ -21,7 +21,7 @@ import LocalMoviesIcon from "@mui/icons-material/LocalMovies";
 import RecentActorsIcon from "@mui/icons-material/RecentActors";
 import StarRateIcon from "@mui/icons-material/StarRate";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { useNavigate, Outlet } from "react-router-dom";
+import { useNavigate, Outlet, useLocation } from "react-router-dom";
 import { ErrorContext, ErrorContextType } from "../context/ErrorProvider";
 import { APIResponse, IUser, Roles } from "../types";
 import { getCurrentUser } from "../misc/auth";
@@ -80,10 +80,12 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { setErrorMessage } = useContext(ErrorContext) as ErrorContextType;
   const theme = useTheme();
   const [open, setOpen] = useState(true);
   const [currentUser, setCurrentUser] = useState<IUser | null>(null);
+
   useEffect(() => {
     onMount();
   }, []);
@@ -158,7 +160,10 @@ const Dashboard = () => {
         <Divider />
         <List>
           <ListItem disablePadding>
-            <ListItemButton onClick={() => navigate("/dashboard")}>
+            <ListItemButton
+              selected={location.pathname === "/dashboard"}
+              onClick={() => navigate("/dashboard")}
+            >
               <ListItemIcon>
                 <AccountCircleIcon />
               </ListItemIcon>
@@ -166,7 +171,10 @@ const Dashboard = () => {
             </ListItemButton>
           </ListItem>
           <ListItem disablePadding>
-            <ListItemButton onClick={() => navigate("/dashboard/adminMovies")}>
+            <ListItemButton
+              selected={location.pathname === "/dashboard/adminMovies"}
+              onClick={() => navigate("/dashboard/adminMovies")}
+            >
               <ListItemIcon>
                 <LocalMoviesIcon />
               </ListItemIcon>
@@ -174,7 +182,10 @@ const Dashboard = () => {
             </ListItemButton>
           </ListItem>
           <ListItem disablePadding>
-            <ListItemButton onClick={() => navigate("/dashboard/adminActors")}>
+            <ListItemButton
+              selected={location.pathname === "/dashboard/adminActors"}
+              onClick={() => navigate("/dashboard/adminActors")}
+            >
               <ListItemIcon>
                 <RecentActorsIcon />
               </ListItemIcon>
@@ -182,7 +193,10 @@ const Dashboard = () => {
             </ListItemButton>
           </ListItem>
           <ListItem disablePadding>
-            <ListItemButton onClick={() => navigate("/dashboard/adminReviews")}>
+            <ListItemButton
+              selected={location.pathname === "/dashboard/adminReviews"}
+              onClick={(event) => navigate("/dashboard/adminReviews")}
+            >
               <ListItemIcon>
                 <StarRateIcon />
               </ListItemIcon>

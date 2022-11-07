@@ -86,7 +86,7 @@ const MovieDetails = () => {
               <h3>Reviews</h3>
               {movie.reviews.map((review) => {
                 if (review.isApproved) {
-                  return <MovieReview review={review} />;
+                  return <MovieReview review={review} key={review.id} />;
                 }
               })}
             </>
